@@ -86,6 +86,8 @@ func main() {
 
 	for _, filename := range args {
 		err := replace(filename)
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
