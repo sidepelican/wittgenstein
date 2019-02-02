@@ -73,6 +73,8 @@ func replace(filename string) error {
 	if len(diff) > 0 {
 		fmt.Print("updated: ")
 		fmt.Println(diff)
+
+		runCommand(`\cp -f ` + fw.Name() + " " + filename)
 	}
 
 	return nil
