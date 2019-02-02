@@ -7,5 +7,8 @@ import (
 func TestSample1(t *testing.T) {
 	file := "testfiles/sample1.txt"
 
-	replace(file)
+	err := replace(file)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
