@@ -93,10 +93,18 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
+	hasError := false
 	for _, filename := range args {
 		err := replace(filename)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
+			hasError = true
 		}
+	}
+
+	if hasError {
+		os.Exit(1)
+	} else {
+		os.Exit(0)
 	}
 }
