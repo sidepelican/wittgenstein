@@ -1,0 +1,15 @@
+hoge
+fuga
+
+// WITTGENSTEIN_BEGIN `head main.go | grep package`
+package main
+// WITTGENSTEIN_END
+1234567890
+# WITTGENSTEIN_BEGIN `echo hello && echo world`
+hello
+world
+# WITTGENSTEIN_END
+
+# WITTGENSTEIN_BEGIN `cat aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbb`
+cat: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbb: No such file or directory
+# WITTGENSTEIN_END

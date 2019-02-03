@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strings"
 )
 
 func runCommand(command string) string {
@@ -24,8 +23,13 @@ func runCommand(command string) string {
 	return string(out)
 }
 
-var beginRe = regexp.MustCompile(`(//|#)\sWITTGENSTEIN_BEGIN\s` + "`(.+)`")
-var endRe = regexp.MustCompile(`(//|#)\sWITTGENSTEIN_END`)
+func isSameFile(file1, file2 string) bool {
+	diff := runCommand("diff " + file1 + " " + file2)
+	return len(diff) == 0
+}
+
+var beginRe = regexp.MustCompile(`(//|#)\s*WITTGENSTEIN_BEGIN\s*` + "`(.+)`")
+var endRe = regexp.MustCompile(`(//|#)\s*WITTGENSTEIN_END`)
 
 func replace(filename string) error {
 	fp, err := os.Open(filename)
@@ -45,9 +49,11 @@ func replace(filename string) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		endReResult := endRe.FindAllStringSubmatch(line, -1)
-		if endReResult != nil {
-			skip = false
+		if skip {
+			endReResult := endRe.FindAllStringSubmatch(line, -1)
+			if endReResult != nil {
+				skip = false
+			}
 		}
 
 		if !skip {
@@ -55,13 +61,15 @@ func replace(filename string) error {
 			fw.WriteString("\n")
 		}
 
-		beginReResult := beginRe.FindAllStringSubmatch(line, -1)
-		if beginReResult != nil && len(beginReResult[0]) >= 3 {
-			command := beginReResult[0][2]
-			commandResult := runCommand(command)
+		if !skip {
+			beginReResult := beginRe.FindAllStringSubmatch(line, -1)
+			if beginReResult != nil && len(beginReResult[0]) >= 3 {
+				command := beginReResult[0][2]
+				commandResult := runCommand(command)
 
-			fw.WriteString(commandResult)
-			skip = true
+				fw.WriteString(commandResult)
+				skip = true
+			}
 		}
 	}
 
@@ -69,11 +77,7 @@ func replace(filename string) error {
 		return err
 	}
 
-	diff := strings.TrimRight(runCommand("diff "+filename+" "+fw.Name()), "\n")
-	if len(diff) > 0 {
-		fmt.Print("updated: ")
-		fmt.Println(diff)
-
+	if !isSameFile(filename, fw.Name()) {
 		runCommand(`\cp -f ` + fw.Name() + " " + filename)
 	}
 

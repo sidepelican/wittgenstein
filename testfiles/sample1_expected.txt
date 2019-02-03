@@ -1,0 +1,6 @@
+you can replace between WITTGENSTEIN_BEGIN and WITTGENSTEIN_END with shell command result.
+
+# WITTGENSTEIN_BEGIN `echo hello`
+hello
+# WITTGENSTEIN_END
+world
