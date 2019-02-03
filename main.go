@@ -11,8 +11,12 @@ import (
 	"regexp"
 )
 
+var debug bool = false
+
 func runCommand(command string) string {
-	fmt.Println("\x1b[36m❯", command, "\x1b[0m")
+	if debug {
+		fmt.Println("\x1b[36m❯", command, "\x1b[0m")
+	}
 
 	out, _ := exec.Command("sh", "-c", command).CombinedOutput()
 	// if err != nil {
@@ -85,13 +89,14 @@ func replace(filename string) error {
 }
 
 func main() {
+	flag.BoolVar(&debug, "d", false, "show debug log")
 	flag.Parse()
 	args := flag.Args()
 
 	for _, filename := range args {
 		err := replace(filename)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 	}
 }
